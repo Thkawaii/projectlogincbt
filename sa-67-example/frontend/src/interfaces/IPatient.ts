@@ -1,0 +1,11 @@
+export interface PatientInterface {
+  first_name: string;
+  last_name: string;
+  gender: string;
+  address: string;
+  date_of_birth: string; // Format: YYYY-MM-DD
+  phone: string;
+  email: string;
+  password: string;
+  consent_accepted: boolean;
+}
