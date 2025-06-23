@@ -18,6 +18,10 @@ func main() {
 
 	r.POST("/patients/register", controller.CreatePatient)
 	r.POST("/psychologists/register", controller.CreatePsychologist)
+	r.POST("/patients/login", controller.PatientLogin)
+	r.POST("/psychologists/login", controller.PsychologistLogin)
+
+
 	log.Println("Registered route: /psychologists/register")
 
 	log.Println("Server running on http://localhost:8080")
