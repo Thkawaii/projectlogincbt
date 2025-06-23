@@ -6,15 +6,38 @@ import diaryImage from "../../assets/diary.png";
 import recordImage from "../../assets/record.png";
 import medImage from "../../assets/med.png";
 import SymmedImage from "../../assets/symmed.png"; // ใช้ชื่อไฟล์จริงที่คุณเซฟไว้
+import { useEffect } from "react"; // เพิ่มไว้ด้านบนสุดด้วย
+
 function HomePage() {
   const [showMenu, setShowMenu] = useState(false);
   const navigate = useNavigate();
-
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
   const toggleProfileMenu = () => {
     setShowMenu(!showMenu);
   };
+useEffect(() => {
+  const user = localStorage.getItem("user");
+  if (!user) {
+    Swal.fire({
+      icon: "warning",
+      title: "กรุณาเข้าสู่ระบบก่อนใช้งาน",
+    }).then(() => {
+      navigate("/login");
+    });
+  }
+}, []);
+const handleEditProfile = () => {
+  Swal.fire({
+    title: user.email || "No email",
+    imageUrl: "https://i.pinimg.com/736x/90/92/20/909220721b5f79574900deb68ebae5ff.jpg", // ลิงก์ตรงจาก Pinterest ไม่ได้แสดงภาพ ต้องใช้ลิงก์ภาพโดยตรง (หรือโหลดเก็บเอง)
+   // imageWidth: 400,
+    imageHeight: 200,
+    imageAlt: "Profile image",
+  });
+};
 
   const handleLogout = () => {
+    localStorage.removeItem("user"); // ✅ เคลียร์ session
     const Toast = Swal.mixin({
       toast: true,
       position: "top-end",
@@ -60,7 +83,7 @@ function HomePage() {
 
             {showMenu && (
               <div className="housemed-profile-menu">
-                <button>Edit Profile</button>
+                <button onClick={handleEditProfile}>Edit Profile</button>
                 <button onClick={handleLogout}>Logout</button>
               </div>
             )}

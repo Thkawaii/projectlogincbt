@@ -73,3 +73,29 @@ func CreatePsychologist(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Psychologist registered successfully", "psychologist": psych})
 }
+func PsychologistLogin(c *gin.Context) {
+	var payload LoginPayload
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request"})
+		return
+	}
+
+	var psychologist entity.Psychologist
+	if err := db.DB.Where("email = ?", payload.Email).First(&psychologist).Error; err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "ไม่พบนักจิตวิทยาที่ใช้อีเมลนี้"})
+		return
+	}
+
+	if !config.CheckPasswordHash(payload.Password, psychologist.PasswordHash) {
+	c.JSON(http.StatusUnauthorized, gin.H{"message": "รหัสผ่านไม่ถูกต้อง"})
+	return
+}
+
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":     "Login successful",
+		"userType":    "psychologist",
+		"profileName": psychologist.FirstName + " " + psychologist.LastName,
+		"imagePath":   psychologist.LicenseImage,
+	})
+}

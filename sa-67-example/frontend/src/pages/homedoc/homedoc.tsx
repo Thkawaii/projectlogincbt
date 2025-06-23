@@ -10,11 +10,19 @@ import SymmedImage from "../../assets/symmed.png"; // ใช้ชื่อไ�
 const Homedoc: React.FC = () => {
   const [showMenu, setShowMenu] = useState(false);
   const navigate = useNavigate();
-
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
   const toggleProfileMenu = () => {
     setShowMenu(!showMenu);
   };
-
+const prowo = () => { 
+  Swal.fire({
+    title: user.email || "No email",
+    imageUrl: "https://i.pinimg.com/736x/90/92/20/909220721b5f79574900deb68ebae5ff.jpg", // ลิงก์ตรงจาก Pinterest ไม่ได้แสดงภาพ ต้องใช้ลิงก์ภาพโดยตรง (หรือโหลดเก็บเอง)
+   // imageWidth: 400,
+    imageHeight: 200,
+    imageAlt: "Profile image",
+  });
+};
   const handleLogout = () => {
     const Toast = Swal.mixin({
       toast: true,
@@ -61,7 +69,7 @@ const Homedoc: React.FC = () => {
 
             {showMenu && (
               <div className="docflour-profile-menu">
-                <button>Edit Profile</button>
+                <button onClick={prowo}>Edit Profile</button>
                 <button onClick={handleLogout}>Logout</button>
               </div>
             )}
