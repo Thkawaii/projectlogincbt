@@ -100,6 +100,7 @@
 }
 
 .consent-checkbox input[type="checkbox"] {
+  margin-top: 1rem; /* เพิ่มบรรทัดเว้นด้านบน */
   margin-right: 0.5rem;
   width: 18px;
   height: 18px;
@@ -264,3 +265,230 @@ button[type="submit"]:focus {
   background-clip: padding-box;
 }
 
+.yokhealth-btn {
+  width: 100%;
+  background: linear-gradient(to right, #f6f6f6, #d4f0ff);
+  border: none;
+  color: #004466;
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 153, 255, 0.2);
+  transition: all 0.3s ease;
+  margin-right: 1rem;
+}
+
+.yokhealth-btn:hover {
+  background: linear-gradient(to right, #ffffff, #dff9ff);
+  box-shadow: 0 5px 14px rgba(0, 153, 255, 0.35);
+  transform: translateY(-1.5px);
+}
+
+.yokhealth-btn:focus {
+  outline: 3px solid rgba(0, 153, 255, 0.2);
+  outline-offset: 2px;
+}
+.form-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+/* Step indicator */
+.yakno { 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 2rem 0;
+  position: relative;
+}
+
+.yakno::before { 
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  /* เปลี่ยนจาก background เป็น border-bottom แบบเส้นประ */
+  background: none;  /* เอา background ออก */
+  border-bottom: 3px dashed #d1f4ff;  /* เส้นประสีฟ้าอ่อน */
+  z-index: 0;
+}
+
+
+.step-box {
+  position: relative;
+  text-align: center;
+  flex: 1;
+  z-index: 1;
+}
+
+.step-box .circle {
+  width: 40px;
+  height: 40px;
+  background: #d1f4ff;
+  color: #007baf;
+  font-weight: bold;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 6px rgba(0, 153, 255, 0.2);
+  font-size: 1.1rem;
+  z-index: 2;
+}
+
+.step-box p {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #7a9ca5;
+}
+
+/* Active step */
+.step-box.active .circle {
+  background: #00bcd4;
+  color: white;
+}
+
+.step-box.active p {
+  color: #00bcd4;
+}
+/* SweetAlert2 input style */
+.swal2-input {
+  font-family: "Segoe UI", "Sarabun", sans-serif;
+  font-size: 1rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  border: 1.5px solid #b3e5fc;
+  transition: all 0.3s ease;
+}
+
+.swal2-input:focus {
+  border-color: #00aaff;
+  background-color: #e6faff;
+  box-shadow: 0 0 6px rgba(0, 153, 255, 0.3);
+}
+
+.swal2-popup {
+  font-family: "Segoe UI", "Sarabun", sans-serif !important;
+  border-radius: 16px !important;
+}
+.northpage { 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.northmessage {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #226373;
+  margin-bottom: 1rem;
+}
+
+.northsubtext {
+  font-size: 1.2rem;
+  color: #4a7a84;
+  margin-bottom: 2rem;
+}
+.lang-switch-btn {
+  background-color: #d4f0ff;
+  color: #004466;
+  border: none;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 153, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.lang-switch-btn:hover {
+  background-color: #bce7fb;
+  transform: translateY(-1px);
+}
+.privacy-topics {
+  background: #f0f9ff;
+  border: 1px solid #d0ecff;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 153, 255, 0.1);
+}
+
+.privacy-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap; /* Responsive */
+}
+
+.privacy-left {
+  flex: 1 1 60%;
+}
+
+.privacy-left h4 {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #226373;
+  margin-bottom: 0.5rem;
+}
+
+.privacy-left ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  color: #225566;
+  font-size: 0.95rem;
+}
+
+.privacy-right {
+  flex: 1 1 35%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* เปลี่ยนจาก center เป็น flex-start */
+  padding-top: 0.5rem; /* ถ้าต้องการขยับลงนิดหน่อย ควบคุมด้วย padding นี้ */
+}
+
+.privacy-img {
+  max-width: 200px;
+  height: auto;
+  border-radius: 10px;
+  object-fit: contain;
+}
+.eatprivacy {
+  background: rgba(255, 255, 255, 0.15); /* ลดความขาวลงหน่อยเพื่อให้ดูนุ่มกว่า */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.25); /* เพิ่มความชัดเจนขอบ */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  
+  padding: 2rem;
+  width: 100%;
+  max-width: 150px;
+  margin: 0 auto;
+
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  animation: glow-pastel 4s infinite ease-in-out;
+  position: relative;
+  z-index: 1;
+}
+
+.eatprivacy:hover {
+  transform: scale(1.04);
+  animation: glow-pastel-fast 2s infinite ease-in-out;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18); /* เพิ่มเงาเวลา hover */
+}
+.privacy-left ul li {
+  margin-bottom: 0.75rem; /* หรือ 1rem ถ้าอยากเว้นมากขึ้น */
+}

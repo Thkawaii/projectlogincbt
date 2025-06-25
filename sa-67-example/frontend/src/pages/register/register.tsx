@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";  // <-- เพิ่ม import นี้
+import { useNavigate } from "react-router-dom";
 import "./register.css";
-
+import privacyImage from "../../assets/privacy.png";
 const Register: React.FC = () => {
-  const navigate = useNavigate();  // <-- เรียกใช้งาน useNavigate
-
+  const navigate = useNavigate();
+  const [language, setLanguage] = useState<"TH" | "EN">("TH");
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -18,301 +19,314 @@ const Register: React.FC = () => {
     confirmPassword: "",
     consent: false,
   });
-
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+) => {
+  const target = e.target;
+  const name = target.name;
+  const value =
+    target instanceof HTMLInputElement && target.type === "checkbox"
+      ? target.checked
+      : target.value;
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const target = e.target;
-    const name = target.name;
-    let value: string | boolean;
+  setFormData((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
 
-    if (
-      target instanceof HTMLInputElement &&
-      (target.type === "checkbox" || target.type === "radio")
-    ) {
-      value = target.checked;
-    } else {
-      value = target.value;
-    }
+  setErrors((prev) => {
+    const copy = { ...prev };
+    delete copy[name];
+    return copy;
+  });
+};
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
 
-    setErrors((prev) => {
-      const copy = { ...prev };
-      delete copy[name];
-      return copy;
-    });
-  };
-
-  const validate = () => {
+  const validateStep1 = () => {
     const newErrors: { [key: string]: string } = {};
-
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = "กรุณากรอกชื่อ";
-    } else if (!/^[ก-๙a-zA-Z\s]+$/.test(formData.firstName)) {
-      newErrors.firstName = "ชื่อควรเป็นภาษาไทยหรืออังกฤษเท่านั้น";
-    }
-
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = "กรุณากรอกนามสกุล";
-    } else if (!/^[ก-๙a-zA-Z\s]+$/.test(formData.lastName)) {
-      newErrors.lastName = "นามสกุลควรเป็นภาษาไทยหรืออังกฤษเท่านั้น";
-    }
-
+    if (!formData.firstName.trim()) newErrors.firstName = "กรุณากรอกชื่อ";
+    if (!formData.lastName.trim()) newErrors.lastName = "กรุณากรอกนามสกุล";
     if (!formData.gender) newErrors.gender = "กรุณาเลือกเพศ";
     if (!formData.address.trim()) newErrors.address = "กรุณากรอกที่อยู่";
     if (!formData.dob) newErrors.dob = "กรุณาเลือกวันเกิด";
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = "กรุณากรอกเบอร์โทรศัพท์";
-    } else if (!/^0\d{9}$/.test(formData.phone)) {
-      newErrors.phone = "เบอร์โทรศัพท์ไม่ถูกต้อง (ต้องเป็นเลข 10 หลักขึ้นต้นด้วย 0)";
-    }
-    // ตรวจสอบ email
-    if (!formData.email.trim()) {
-      newErrors.email = "กรุณากรอกอีเมล";
-    } else if (!/^[\w.-]+@gmail\.com$/.test(formData.email)) {
-      newErrors.email = "รูปแบบ email ไม่ถูกต้อง";
-    }
-    if (!formData.password) newErrors.password = "กรุณากรอกรหัสผ่าน";
-    if (formData.password !== formData.confirmPassword)
-      newErrors.confirmPassword = "รหัสผ่านไม่ตรงกัน";
-    if (!formData.consent)
-      newErrors.consent = "กรุณายอมรับนโยบายความเป็นส่วนตัว";
-
+    if (!/^0\d{9}$/.test(formData.phone)) newErrors.phone = "เบอร์โทรศัพท์ไม่ถูกต้อง";
     return newErrors;
   };
 
- const handleSubmit = async (e: React.FormEvent) => {
+  const validateStep2 = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!/^[\w.-]+@gmail\.com$/.test(formData.email)) newErrors.email = "รูปแบบ email ไม่ถูกต้อง";
+    if (!formData.password) newErrors.password = "กรุณากรอกรหัสผ่าน";
+    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "รหัสผ่านไม่ตรงกัน";
+    return newErrors;
+  };
+
+  const validateStep3 = () => {
+  const errors: { [key: string]: string } = {};
+  if (!formData.consent) {
+    errors.consent = "กรุณายอมรับนโยบายความเป็นส่วนตัว";
+  }
+  return errors;
+};
+const policyItems = {
+  TH: [
+    "การเก็บข้อมูลส่วนบุคคลเพื่อบริการ CBT",
+    "การจัดเก็บข้อมูลอย่างปลอดภัยและการจำกัดการเข้าถึง",
+    "ไม่เปิดเผยข้อมูลโดยไม่ได้รับความยินยอม (ยกเว้นตามกฎหมาย)",
+    "สิทธิของผู้ใช้: เข้าถึง แก้ไข หรือลบข้อมูล",
+    "การใช้แอปฯ ถือเป็นการให้ความยินยอม"
+  ],
+  EN: [
+    "Personal Data Collection for CBT Services",
+    "Secure Storage and Restricted Access",
+    "No Disclosure Without Consent (Except by Law)",
+    "User Rights: Access, Edit, or Delete Data",
+    "Consent Implied by App Usage"
+  ]
+};
+
+
+  const handleNext = (e: React.FormEvent) => {
+    e.preventDefault();
+    let validationErrors = {};
+    if (step === 1) validationErrors = validateStep1();
+    else if (step === 2) validationErrors = validateStep2();
+    else if (step === 3) validationErrors = validateStep3();
+
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) setStep(step + 1);
+  };
+
+const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
-  const validationErrors = validate();
-  setErrors(validationErrors);
+  const allErrors = {
+    ...validateStep1(),
+    ...validateStep2(),
+    ...validateStep3(),
+  };
+  setErrors(allErrors);
 
-  if (Object.keys(validationErrors).length === 0) {
+  if (Object.keys(allErrors).length === 0) {
     try {
       const response = await fetch("http://localhost:8080/patients/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      const result = await response.json();
+      const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(result.error || "การลงทะเบียนล้มเหลว");
+      if (response.ok) {
+        // ✅ แสดง SweetAlert สำเร็จ แล้วค่อยไป Step 4
+        await Swal.fire({
+          title: "🎉 ลงทะเบียนสำเร็จ!",
+          text: "ระบบได้บันทึกข้อมูลของคุณเรียบร้อยแล้ว",
+          icon: "success",
+          confirmButtonText: "ตกลง",
+          timer: 3000,
+          showClass: { popup: "animate__animated animate__fadeInDown" },
+          hideClass: { popup: "animate__animated animate__fadeOutUp" },
+        });
+        setStep(4); // ไป Step สุดท้าย
+      } else {
+        Swal.fire({
+          title: "❌ เกิดข้อผิดพลาด",
+          text: data.message || "ไม่สามารถลงทะเบียนได้",
+          icon: "error",
+          confirmButtonText: "ตกลง",
+        });
       }
-
+    } catch (error) {
       Swal.fire({
-        title: "🎉 ลงทะเบียนสำเร็จ!",
-        text: "ระบบได้บันทึกข้อมูลของคุณเรียบร้อยแล้ว",
-        icon: "success",
-        confirmButtonText: "ตกลง",
-        timer: 3000,
-        timerProgressBar: true,
-        backdrop: true,
-        showClass: {
-          popup: "animate__animated animate__fadeInDown",
-        },
-        hideClass: {
-          popup: "animate__animated animate__fadeOutUp",
-        },
-        customClass: {
-          popup: "swal2-border-radius",
-        },
-      }).then((result) => {
-        if (result.isConfirmed || result.isDismissed) {
-          navigate("/cute"); // เปลี่ยนเส้นทาง
-        }
-      });
-
-      // รีเซ็ตฟอร์ม
-      setFormData({
-        firstName: "",
-        lastName: "",
-        gender: "",
-        address: "",
-        dob: "",
-        phone: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        consent: false,
-      });
-
-    } catch (error: any) {
-      Swal.fire({
-        title: "เกิดข้อผิดพลาด",
-        text: error.message || "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้",
+        title: "❌ เกิดข้อผิดพลาด",
+        text: "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้",
         icon: "error",
         confirmButtonText: "ตกลง",
       });
     }
   }
-  };
+};
 
   return (
     <div className="bmser-background">
     <form className="registermed" onSubmit={handleSubmit} noValidate>
       <h2>ลงทะเบียนผู้ป่วย</h2>
+    <div className="yakno"> 
+  <div className={`step-box ${step === 1 ? "active" : ""}`}>
+    <div className="circle">1</div>
+    <p>ข้อมูลส่วนตัว</p>
+  </div>
 
-      <label>
-        ชื่อ
-        <input
-          type="text"
-          name="firstName"
-          value={formData.firstName}
-          onChange={handleChange}
-          
-        />
-        {errors.firstName && (
-          <div className="error-message">{errors.firstName}</div>
-        )}
-      </label>
+  <div className={`step-box ${step === 2 ? "active" : ""}`}>
+    <div className="circle">2</div>
+    <p>อีเมลและรหัสผ่าน</p>
+  </div>
 
-      <label>
-        นามสกุล
-        <input
-          type="text"
-          name="lastName"
-          value={formData.lastName}
-          onChange={handleChange}
-         
-        />
-        {errors.lastName && (
-          <div className="error-message">{errors.lastName}</div>
-        )}
-      </label>
+  <div className={`step-box ${step === 3 ? "active" : ""}`}>
+    <div className="circle">3</div>
+    <p>นโยบายความเป็นส่วนตัว</p>
+  </div>
 
-      <label>
-        เพศ
-        <select
-          name="gender"
-          value={formData.gender}
-          onChange={handleChange}
-          
-        >
-          <option value="">เลือก</option>
-          <option value="male">ชาย</option>
-          <option value="female">หญิง</option>
-          <option value="other">อื่นๆ</option>
-        </select>
-        {errors.gender && (
-          <div className="error-message">{errors.gender}</div>
-        )}
-      </label>
+  <div className={`step-box ${step === 4 ? "active" : ""}`}> 
+    <div className="circle">4</div> 
+    <p>สำเร็จ</p> 
+  </div>
+</div>
 
-      <label>
-        ที่อยู่
-        <input
-          type="text"
-          name="address"
-          value={formData.address}
-          onChange={handleChange}
-          
-        />
-        {errors.address && (
-          <div className="error-message">{errors.address}</div>
-        )}
-      </label>
 
-      <label>
-        วันเกิด
-        <input
-          type="date"
-          name="dob"
-          value={formData.dob}
-          onChange={handleChange}
-       
-        />
-        {errors.dob && <div className="error-message">{errors.dob}</div>}
-      </label>
+      {/* STEP 1 */}
+      {step === 1 && (
+        <>
+          <label className="input-label">
+            ชื่อ
+            <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} />
+          </label>
+          {errors.firstName && <div className="error-message">{errors.firstName}</div>}
 
-      <label>
-  เบอร์โทรศัพท์
-  <input
-    type="tel"
-    name="phone"
-    value={formData.phone}
-    maxLength={10}
-    onChange={(e) => {
-      const cleanedValue = e.target.value.replace(/[^0-9]/g, ""); // กรองเฉพาะตัวเลข
-      setFormData((prev) => ({
-        ...prev,
-        phone: cleanedValue,
-      }));
+          <label className="input-label">
+            นามสกุล
+            <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} />
+          </label>
+          {errors.lastName && <div className="error-message">{errors.lastName}</div>}
 
-      // ล้าง error ถ้ามี
-      setErrors((prev) => {
-        const copy = { ...prev };
-        delete copy.phone;
-        return copy;
-      });
-    }}
-  />
-  {errors.phone && <div className="error-message">{errors.phone}</div>}
-</label>
-    <label>
-        อีเมล
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-        />
-        {errors.email && <div className="error-message">{errors.email}</div>}
-      </label>
+          <label className="input-label">
+            เพศ
+            <select name="gender" value={formData.gender} onChange={handleChange}>
+              <option value="">เลือก</option>
+              <option value="male">ชาย</option>
+              <option value="female">หญิง</option>
+              <option value="other">อื่นๆ</option>
+            </select>
+          </label>
+          {errors.gender && <div className="error-message">{errors.gender}</div>}
 
-      <label>
-        รหัสผ่าน
-        <input
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-        
-        />
-        {errors.password && (
-          <div className="error-message">{errors.password}</div>
-        )}
-      </label>
+          <label className="input-label">
+            ที่อยู่
+            <input type="text" name="address" value={formData.address} onChange={handleChange} />
+          </label>
+          {errors.address && <div className="error-message">{errors.address}</div>}
 
-      <label>
-        ยืนยันรหัสผ่าน
-        <input
-          type="password"
-          name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-       
-        />
-        {errors.confirmPassword && (
-          <div className="error-message">{errors.confirmPassword}</div>
-        )}
-      </label>
+          <label className="input-label">
+            วันเกิด
+            <input type="date" name="dob" value={formData.dob} onChange={handleChange} />
+          </label>
+          {errors.dob && <div className="error-message">{errors.dob}</div>}
 
- <label>
-  <input
-    type="checkbox"
-    name="consent"
-    checked={formData.consent}
-    onChange={handleChange}
-   
-  />
-  <span
-    onClick={(e) => {
-      e.preventDefault(); // ป้องกันการเลือกข้อความหรือคลิก link ซ้อน
-      Swal.fire({
-        title: "นโยบายความเป็นส่วนตัวและการให้ความยินยอม",
-        html: `
-          <ul style="text-align: left; padding-left: 1.2em;">
+          <label className="input-label">
+            เบอร์โทรศัพท์
+            <input
+              type="tel"
+              name="phone"
+              maxLength={10}
+              value={formData.phone}
+              onChange={(e) => {
+                const cleaned = e.target.value.replace(/[^0-9]/g, "");
+                setFormData({ ...formData, phone: cleaned });
+                setErrors((prev) => {
+                  const copy = { ...prev };
+                  delete copy.phone;
+                  return copy;
+                });
+              }}
+            />
+          </label>
+          {errors.phone && <div className="error-message">{errors.phone}</div>}
+              <p className="login-link">
+            มีบัญชีผู้ใช้แล้ว? <a href="/login">เข้าสู่ระบบ</a>
+          </p>
+          <button type="button" className="yokhealth-btn" onClick={handleNext}>ถัดไป
+          </button>
+        </>
+      )}
+
+      {/* STEP 2 */}
+      {step === 2 && (
+        <>
+          <label className="email-label">
+            อีเมล
+            <input type="email" name="email" value={formData.email} onChange={handleChange} />
+          </label>
+          {errors.email && <div className="error-message">{errors.email}</div>}
+
+          <label className="input-label">
+            รหัสผ่าน
+            <input type="password" name="password" value={formData.password} onChange={handleChange} />
+          </label>
+          {errors.password && <div className="error-message">{errors.password}</div>}
+
+          <label className="input-label">
+            ยืนยันรหัสผ่าน
+            <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} />
+          </label>
+          {errors.confirmPassword && <div className="error-message">{errors.confirmPassword}</div>}
+
+          <div className="form-buttons">
+            <button type="button" className="yokhealth-btn" onClick={() => setStep(step - 1)}>ย้อนกลับ</button>
+            <button type="button" className="yokhealth-btn" onClick={handleNext}>ถัดไป
+          </button>
+          </div>
+        </>
+      )}
+
+      {/* STEP 3 */}
+      {step === 3 && (
+        <>
+<div className="privacy-topics">
+   <div style={{ textAlign: "right", marginBottom: "1rem" }}>
+  <button
+    type="button"
+    onClick={() => setLanguage(language === "TH" ? "EN" : "TH")}
+    className="lang-switch-btn"
+  >
+    {language === "TH" ? "EN" : "TH"}
+  </button>
+</div>
+   <div className="privacy-flex">
+        {/* ฝั่งซ้าย: ข้อความ */}
+        <div className="privacy-left">
+          <h4>
+            {language === "TH"
+              ? "นโยบายความเป็นส่วนตัวและการให้ความยินยอม"
+              : "Privacy Policy & Consent"}
+          </h4>
+          <ul>
+            {policyItems[language].map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        </div>
+
+        {/* ฝั่งขวา: รูปภาพ */}
+        <div className="eatprivacy">
+        <div className="privacy-right">
+          <img
+            src={privacyImage}
+            alt="Privacy Illustration"
+            className="privacy-img"
+          />
+        </div>
+        </div>
+      </div>
+</div>
+
+
+     
+          <label className="consent-checkbox">
+            <input
+              type="checkbox"
+              name="consent"
+              checked={formData.consent}
+              onChange={handleChange}
+            />
+            <span
+              onClick={(e) => {
+                e.preventDefault();
+                Swal.fire({
+                  title: "นโยบายความเป็นส่วนตัวและการให้ความยินยอม",
+                  html: `
+                  <ul style="text-align: left; padding-left: 1.2em;">
             <li>แอปพลิเคชันจะเก็บรวบรวมข้อมูลส่วนบุคคล ข้อมูลบำบัด CBT เพื่อใช้ในการให้บริการ</li>
             <li>ข้อมูลของผู้ใช้จะถูกเก็บรักษาอย่างปลอดภัยและจำกัดการเข้าถึงเฉพาะเจ้าหน้าที่ที่รับผิดชอบ</li>
             <li>ข้อมูลส่วนบุคคลจะไม่ถูกเปิดเผยแก่บุคคลที่สามโดยไม่ได้รับความยินยอมล่วงหน้า เว้นแต่เป็นไปตามกฎหมาย</li>
@@ -349,22 +363,33 @@ const Register: React.FC = () => {
   >
     ยอมรับนโยบายความเป็นส่วนตัว
   </span>
-</label>
+          </label>
+          {errors.consent && <div className="error-message">{errors.consent}</div>}
 
 
-      {errors.consent && (
-        <div className="error-message" style={{ marginTop: 4 }}>
-          {errors.consent}
-        </div>
+
+          <div className="form-buttons">
+            <button type="submit" onClick={() => setStep(step - 1)}>ย้อนกลับ</button>
+            <button type="submit">ลงทะเบียน</button>
+          </div>
+        </>
       )}
-    <p className="login-link">
-  มีบัญชีผู้ใช้แล้ว? <a href="/login">เข้าสู่ระบบ</a>
-</p>
 
-      <button type="submit">ลงทะเบียน</button>
+      {/* STEP 4 */}
+      {step === 4 && (
+        <>
+          <div className="northpage"> 
+  <h3 className="northmessage">🎉 การลงทะเบียนเสร็จสมบูรณ์</h3>
+  <p className="northsubtext">ขอบคุณที่ลงทะเบียนกับเรา</p>
+</div>
+
+          <button type="button" className="yokhealth-btn" onClick={() => navigate("/cute")}>ไปหน้าหลัก</button>
+        </>
+      )}
     </form>
-    </div>
-  );
+  </div>
+);
 };
+
 
 export default Register;
