@@ -294,7 +294,9 @@ const Rolehealth: React.FC = () => {
             />
             {errors.medicalLicense && <div className="wellness-error">{errors.medicalLicense}</div>}
           </label>
-
+           <p className="login-link">
+            มีบัญชีผู้ใช้แล้ว? <a href="/login">เข้าสู่ระบบ</a>
+          </p>
           <button
             type="button"
             className="health-btn-upload"
