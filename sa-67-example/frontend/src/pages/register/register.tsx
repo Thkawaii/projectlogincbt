@@ -10,6 +10,7 @@ const Register: React.FC = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+     age: "", // 👈 เพิ่มตรงนี้
     gender: "",
     address: "",
     dob: "",
@@ -47,6 +48,8 @@ const handleChange = (
     const newErrors: { [key: string]: string } = {};
     if (!formData.firstName.trim()) newErrors.firstName = "กรุณากรอกชื่อ";
     if (!formData.lastName.trim()) newErrors.lastName = "กรุณากรอกนามสกุล";
+    if (!formData.age || isNaN(Number(formData.age)) || Number(formData.age) < 1)
+  newErrors.age = "กรุณากรอกอายุ";
     if (!formData.gender) newErrors.gender = "กรุณาเลือกเพศ";
     if (!formData.address.trim()) newErrors.address = "กรุณากรอกที่อยู่";
     if (!formData.dob) newErrors.dob = "กรุณาเลือกวันเกิด";
@@ -110,16 +113,21 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   if (Object.keys(allErrors).length === 0) {
     try {
+      // แปลง age ให้เป็น number ก่อนส่ง
+      const dataToSend = {
+        ...formData,
+        age: Number(formData.age),
+      };
+
       const response = await fetch("http://localhost:8080/patients/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // ✅ แสดง SweetAlert สำเร็จ แล้วค่อยไป Step 4
         await Swal.fire({
           title: "🎉 ลงทะเบียนสำเร็จ!",
           text: "ระบบได้บันทึกข้อมูลของคุณเรียบร้อยแล้ว",
@@ -129,7 +137,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           showClass: { popup: "animate__animated animate__fadeInDown" },
           hideClass: { popup: "animate__animated animate__fadeOutUp" },
         });
-        setStep(4); // ไป Step สุดท้าย
+        setStep(4);
       } else {
         Swal.fire({
           title: "❌ เกิดข้อผิดพลาด",
@@ -148,6 +156,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     }
   }
 };
+
 
   return (
     <div className="bmser-background">
@@ -190,7 +199,20 @@ const handleSubmit = async (e: React.FormEvent) => {
             <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} />
           </label>
           {errors.lastName && <div className="error-message">{errors.lastName}</div>}
-
+         <div className="age-gender-row">
+  <label className="input-label age-input">
+  อายุ
+  <input
+    type="number"
+    name="age"
+    min="1"
+    value={formData.age}
+    onChange={handleChange}
+  />
+  
+</label>
+</div>
+{errors.age && <div className="error-message">{errors.age}</div>}
           <label className="input-label">
             เพศ
             <select name="gender" value={formData.gender} onChange={handleChange}>

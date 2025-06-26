@@ -492,3 +492,40 @@ button[type="submit"]:focus {
 .privacy-left ul li {
   margin-bottom: 0.75rem; /* หรือ 1rem ถ้าอยากเว้นมากขึ้น */
 }
+.age-gender-row {
+  display: flex;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.age-gender-row .input-label {
+  flex: 1;
+}
+
+.age-gender-row input,
+.age-gender-row select {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  margin-top: 0.25rem;
+  border: 1.5px solid #b3e5fc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #ffffff;
+  font-family: inherit;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
+}
+
+.age-gender-row input:focus,
+.age-gender-row select:focus {
+  outline: none;
+  border-color: #00aaff;
+  background-color: #e6faff;
+  box-shadow: 0 0 6px rgba(0, 153, 255, 0.3);
+}
+
+.age-gender-row input[aria-invalid="true"],
+.age-gender-row select[aria-invalid="true"] {
+  border-color: #ff6b6b;
+  background-color: #fff0f0;
+}
